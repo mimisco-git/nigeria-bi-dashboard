@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<!-- saved from url=(0061)file:///home/sir_mimisco/nigeria-bi-dashboard/docs/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nigeria Business Intelligence Dashboard | Miracle Ugokwe</title>
+<script src="./nigeria_dashboard_files/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,wght@0,300;0,700;1,300&display=swap');
+  :root{--bg:#060f1c;--surface:#0c1a2e;--surface2:#102030;--border:#1a3050;--cyan:#00d4ff;--orange:#f97316;--text:#c8dde8;--muted:#4a7a99;--white:#eaf4f8;--green:#22c55e;--red:#ef4444;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;}
+  .container{max-width:1400px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
+  header{padding:28px 0 20px;border-bottom:1px solid var(--border);}
+  .header-inner{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;}
+  .logo-eyebrow{font-size:10px;letter-spacing:4px;color:var(--cyan);opacity:.7;margin-bottom:4px;}
+  .logo-title{font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:var(--white);}
+  .logo-title span{color:var(--cyan);}
+  .header-meta{text-align:right;}
+  .live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:20px;padding:4px 14px;font-size:11px;color:var(--cyan);letter-spacing:2px;}
+  .live-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.8);}}
+  .header-sub{font-size:11px;color:var(--muted);margin-top:5px;}
+  .data-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:3px 10px;font-size:9px;color:#22c55e;letter-spacing:1px;margin-top:5px;}
+  .tabs{display:flex;gap:4px;padding:16px 0;border-bottom:1px solid var(--border);}
+  .tab{padding:8px 20px;border-radius:6px;font-size:11px;letter-spacing:2px;cursor:pointer;border:1px solid transparent;transition:all .2s;color:var(--muted);background:none;}
+  .tab.active{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.3);color:var(--cyan);}
+  .tab:hover:not(.active){color:var(--text);border-color:var(--border);}
+  .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;padding:20px 0;}
+  .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;}
+  .kpi-card:hover{border-color:rgba(0,212,255,.4);transform:translateY(-2px);}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .kpi-card.cyan::before{background:var(--cyan);}
+  .kpi-card.orange::before{background:var(--orange);}
+  .kpi-card.green::before{background:var(--green);}
+  .kpi-label{font-size:9px;letter-spacing:2px;color:var(--muted);margin-bottom:8px;}
+  .kpi-value{font-family:'Fraunces',serif;font-size:36px;font-weight:700;color:var(--white);line-height:1;}
+  .kpi-card.cyan .kpi-value{color:var(--cyan);}
+  .kpi-card.orange .kpi-value{color:var(--orange);}
+  .kpi-card.green .kpi-value{color:var(--green);}
+  .kpi-change{font-size:10px;margin-top:6px;color:var(--muted);}
+  .kpi-change.up{color:var(--green);}
+  .kpi-change.down{color:var(--red);}
+  .kpi-source{font-size:8px;color:#1a3a55;margin-top:4px;letter-spacing:1px;}
+  .main-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;}
+  .two-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;}
+  .card-title{font-size:10px;letter-spacing:3px;color:var(--cyan);margin-bottom:3px;}
+  .card-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+  .card-source{font-size:8px;color:#1a3a55;margin-top:10px;letter-spacing:1px;}
+  .bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:28px;}
+  .data-table{width:100%;border-collapse:collapse;font-size:11px;}
+  .data-table th{text-align:left;padding:6px 0;font-size:9px;letter-spacing:2px;color:var(--muted);border-bottom:1px solid var(--border);}
+  .data-table td{padding:9px 0;border-bottom:1px solid rgba(26,48,80,.5);color:var(--text);}
+  .data-table tr:last-child td{border-bottom:none;}
+  .tag{display:inline-block;padding:2px 7px;border-radius:10px;font-size:9px;letter-spacing:1px;}
+  .tag.up{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2);}
+  .tag.down{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+  .tag.neutral{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2);}
+  .legend{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+  .legend-item{display:flex;align-items:center;gap:10px;font-size:11px;}
+  .legend-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .legend-label{color:var(--text);flex:1;}
+  .legend-pct{color:var(--muted);}
+  .spark-row{display:flex;flex-direction:column;gap:11px;}
+  .spark-header{display:flex;justify-content:space-between;margin-bottom:4px;}
+  .spark-name{font-size:11px;color:var(--text);}
+  .spark-val{font-size:11px;color:var(--cyan);font-weight:500;}
+  .spark-bar{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+  .spark-fill{height:100%;border-radius:3px;}
+  footer{border-top:1px solid var(--border);padding:18px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+  footer .f-left{font-size:11px;color:var(--muted);}
+  footer .f-left strong{color:var(--cyan);}
+  footer .f-right{font-size:9px;color:var(--muted);letter-spacing:2px;}
+  .page{display:none;}
+  .page.active{display:block;}
+  .insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;padding:20px 0;}
+  .insight-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .insight-icon{font-size:26px;margin-bottom:10px;}
+  .insight-title{font-family:'Fraunces',serif;font-size:16px;color:var(--white);margin-bottom:7px;}
+  .insight-body{font-size:11px;color:var(--muted);line-height:1.9;}
+  .insight-hl{color:var(--cyan);font-weight:500;}
+  .insight-src{font-size:8px;color:#1a3a55;margin-top:8px;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div>
+        <div class="logo-eyebrow">PORTFOLIO PROJECT · DATA ANALYTICS</div>
+        <div class="logo-title">Nigeria <span>Business Intelligence</span> Dashboard</div>
+      </div>
+      <div class="header-meta">
+        <div class="live-badge"><div class="live-dot"></div> DATA ANALYSIS</div>
+        <div class="header-sub">Built by Miracle Ugokwe · Power BI · SQL · Python · Excel · Linux</div>
+        <div class="data-badge">✓ REAL DATA — NBS Q3 2024 · WORLD BANK · NBS TRADE Q1 2025</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(&#39;overview&#39;,this)">OVERVIEW</button>
+    <button class="tab" onclick="switchTab(&#39;sectors&#39;,this)">SECTORS</button>
+    <button class="tab" onclick="switchTab(&#39;trade&#39;,this)">TRADE</button>
+    <button class="tab" onclick="switchTab(&#39;insights&#39;,this)">INSIGHTS</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="page active" id="page-overview">
+    <div class="kpi-row">
+      <div class="kpi-card cyan">
+        <div class="kpi-label">NOMINAL GDP Q3 2024</div>
+        <div class="kpi-value" style="font-size:28px">₦71.13T</div>
+        <div class="kpi-change up">▲ +17.26% YoY</div>
+        <div class="kpi-source">NBS GDP REPORT Q3 2024</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">REAL GDP GROWTH Q3 2024</div>
+        <div class="kpi-value">3.46%</div>
+        <div class="kpi-change up">▲ vs 2.54% in Q3 2023</div>
+        <div class="kpi-source">NBS GDP REPORT Q3 2024</div>
+      </div>
+      <div class="kpi-card cyan">
+        <div class="kpi-label">SERVICES SECTOR SHARE</div>
+        <div class="kpi-value">53.58%</div>
+        <div class="kpi-change up">▲ Largest GDP driver</div>
+        <div class="kpi-source">NBS Q3 2024 — TABLE 8</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-label">INFLATION RATE 2023</div>
+        <div class="kpi-value">24.66%</div>
+        <div class="kpi-change down">▼ Up from 18.85% (2022)</div>
+        <div class="kpi-source">WORLD BANK OPEN DATA 2023</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">NON-OIL GDP SHARE</div>
+        <div class="kpi-value">94.43%</div>
+        <div class="kpi-change up">▲ Economy diversifying</div>
+        <div class="kpi-source">NBS Q3 2024 — TABLE 8</div>
+      </div>
+      <div class="kpi-card cyan">
+        <div class="kpi-label">POPULATION 2023</div>
+        <div class="kpi-value" style="font-size:28px">228M</div>
+        <div class="kpi-change up">▲ Largest in Africa</div>
+        <div class="kpi-source">WORLD BANK OPEN DATA 2023</div>
+      </div>
+    </div>
+
+    <div class="main-grid">
+      <div class="chart-card">
+        <div class="card-title">ANNUAL REAL GDP GROWTH RATE (%)</div>
+        <div class="card-sub">Nigeria GDP growth at market prices — 2014 to 2023 · World Bank Official Data</div>
+        <canvas id="gdpChart" height="282" style="display: block; box-sizing: border-box; height: 282px; width: 846px;" width="846"></canvas>
+        <div class="card-source">SOURCE: World Bank Open Data — GDP growth (annual %) · Nigeria · 2014–2023</div>
+      </div>
+      <div class="chart-card">
+        <div class="card-title">BROAD SECTOR CONTRIBUTION Q3 2024</div>
+        <div class="card-sub">% share of Real GDP by sector</div>
+        <canvas id="sectorDonut" height="400" width="400" style="display: block; box-sizing: border-box; height: 400px; width: 400px;"></canvas>
+        <div class="legend" id="sectorLegend"><div class="legend-item"><div class="legend-dot" style="background:#00d4ff"></div><span class="legend-label">Services</span><span class="legend-pct">53.58%</span></div><div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span class="legend-label">Agriculture</span><span class="legend-pct">28.65%</span></div><div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div><span class="legend-label">Industries</span><span class="legend-pct">17.77%</span></div></div>
+        <div class="card-source">SOURCE: NBS GDP Report Q3 2024 — Table 8 (Quarterly Contribution to GDP)</div>
+      </div>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="chart-card">
+        <div class="card-title">CONSUMER PRICE INFLATION (%)</div>
+        <div class="card-sub">Annual inflation — 2015 to 2023</div>
+        <canvas id="inflationChart" height="210" width="395" style="display: block; box-sizing: border-box; height: 210px; width: 395px;"></canvas>
+        <div class="card-source">SOURCE: World Bank — Inflation, consumer prices (annual %) · Nigeria</div>
+      </div>
+      <div class="chart-card">
+        <div class="card-title">TOP EXPORT COMMODITIES Q1 2025</div>
+        <div class="card-sub">% share of total export value (₦)</div>
+        <div class="spark-row">
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Crude Petroleum</span><span class="spark-val">62.89%</span></div><div class="spark-bar"><div class="spark-fill" style="width:62.89%;background:var(--orange)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Natural Gas (LNG)</span><span class="spark-val">9.38%</span></div><div class="spark-bar"><div class="spark-fill" style="width:9.38%;background:var(--cyan)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Other Petrol. Gases</span><span class="spark-val">8.65%</span></div><div class="spark-bar"><div class="spark-fill" style="width:8.65%;background:var(--orange)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Urea / Fertiliser</span><span class="spark-val">4.15%</span></div><div class="spark-bar"><div class="spark-fill" style="width:4.15%;background:var(--cyan)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Cocoa Beans (Total)</span><span class="spark-val">5.96%</span></div><div class="spark-bar"><div class="spark-fill" style="width:5.96%;background:var(--green)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Cashew, Sesame &amp; Others</span><span class="spark-val">8.97%</span></div><div class="spark-bar"><div class="spark-fill" style="width:8.97%;background:var(--muted)"></div></div></div>
+        </div>
+        <div class="card-source" style="margin-top:14px">SOURCE: NBS Foreign Trade Statistics Tables Q1 2025 — Product Ranking Sheet</div>
+      </div>
+      <div class="chart-card">
+        <div class="card-title">TOP GDP ACTIVITIES Q3 2024</div>
+        <div class="card-sub">% contribution to Real GDP</div>
+        <table class="data-table">
+          <tbody><tr><th>ACTIVITY</th><th>% SHARE</th></tr>
+          <tr><td>Crop Production</td><td><span class="tag up">26.51%</span></td></tr>
+          <tr><td>Trade</td><td><span class="tag up">14.78%</span></td></tr>
+          <tr><td>Telecom &amp; Info</td><td><span class="tag up">13.94%</span></td></tr>
+          <tr><td>Crude Petroleum &amp; Gas</td><td><span class="tag neutral">5.57%</span></td></tr>
+          <tr><td>Real Estate</td><td><span class="tag neutral">5.43%</span></td></tr>
+          <tr><td>Financial Institutions</td><td><span class="tag up">5.06%</span></td></tr>
+          <tr><td>Food, Bev &amp; Tobacco</td><td><span class="tag neutral">4.06%</span></td></tr>
+          <tr><td>Construction</td><td><span class="tag neutral">3.35%</span></td></tr>
+        </tbody></table>
+        <div class="card-source" style="margin-top:10px">SOURCE: NBS GDP Q3 2024 — Figure 2 / Table 7</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTORS -->
+  <div class="page" id="page-sectors">
+    <div class="kpi-row">
+      <div class="kpi-card cyan"><div class="kpi-label">SERVICES GROWTH Q3 2024</div><div class="kpi-value">5.19%</div><div class="kpi-change up">▲ Fastest broad sector</div><div class="kpi-source">NBS Q3 2024 — TABLE 9</div></div>
+      <div class="kpi-card orange"><div class="kpi-label">FINANCE &amp; INSUR. GROWTH</div><div class="kpi-value">30.83%</div><div class="kpi-change up">▲ Fastest sub-sector</div><div class="kpi-source">NBS Q3 2024 — TABLE 4</div></div>
+      <div class="kpi-card green"><div class="kpi-label">INDUSTRY GROWTH Q3 2024</div><div class="kpi-value">2.18%</div><div class="kpi-change up">▲ vs 0.46% Q3 2023</div><div class="kpi-source">NBS Q3 2024 — TABLE 9</div></div>
+      <div class="kpi-card cyan"><div class="kpi-label">AGRICULTURE GROWTH</div><div class="kpi-value">1.14%</div><div class="kpi-change neutral">— Crop-led, stable</div><div class="kpi-source">NBS Q3 2024 — TABLE 4</div></div>
+      <div class="kpi-card orange"><div class="kpi-label">OIL SECTOR GROWTH</div><div class="kpi-value">5.17%</div><div class="kpi-change up">▲ vs -0.85% Q3 2023</div><div class="kpi-source">NBS Q3 2024 — TABLE 9</div></div>
+    </div>
+    <div class="two-grid">
+      <div class="chart-card">
+        <div class="card-title">REAL SECTOR GROWTH RATE Q3 2024 (YoY %)</div>
+        <div class="card-sub">Year-on-year real growth by economic sector</div>
+        <canvas id="sectorBarChart" height="130"></canvas>
+        <div class="card-source">SOURCE: NBS GDP Report Q3 2024 — Table 4 &amp; Table 9</div>
+      </div>
+      <div class="chart-card">
+        <div class="card-title">QUARTERLY REAL GDP GROWTH TREND</div>
+        <div class="card-sub">Real GDP growth (%) — Q3 2022 to Q3 2024</div>
+        <canvas id="quarterlyChart" height="130"></canvas>
+        <div class="card-source">SOURCE: NBS GDP Reports — Real Growth Rate at Basic Price (Q3 2022 – Q3 2024)</div>
+      </div>
+    </div>
+    <div class="two-grid">
+      <div class="chart-card">
+        <div class="card-title">OIL vs NON-OIL GDP SHARE Q3 2024</div>
+        <div class="card-sub">% contribution to Real GDP</div>
+        <canvas id="oilDonut" height="170"></canvas>
+        <div class="legend" id="oilLegend"></div>
+        <div class="card-source">SOURCE: NBS Q3 2024 — Table 8</div>
+      </div>
+      <div class="chart-card">
+        <div class="card-title">BROAD SECTOR CONTRIBUTIONS OVER TIME</div>
+        <div class="card-sub">Agriculture, Industry &amp; Services % of Real GDP (2019–Q3 2024)</div>
+        <canvas id="sectorStackChart" height="170"></canvas>
+        <div class="card-source">SOURCE: NBS Annual Table 10 (2019–2023) + NBS Quarterly Table 8 (2024)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRADE -->
+  <div class="page" id="page-trade">
+    <div class="kpi-row">
+      <div class="kpi-card orange"><div class="kpi-label">TOP EXPORT Q1 2025</div><div class="kpi-value" style="font-size:22px">Crude Oil</div><div class="kpi-change down">62.89% of all exports</div><div class="kpi-source">NBS TRADE STATS Q1 2025</div></div>
+      <div class="kpi-card cyan"><div class="kpi-label">TOP IMPORT Q1 2025</div><div class="kpi-value" style="font-size:22px">Gas Oil</div><div class="kpi-change down">11.86% of all imports</div><div class="kpi-source">NBS TRADE STATS Q1 2025</div></div>
+      <div class="kpi-card green"><div class="kpi-label">COCOA BEAN EXPORTS</div><div class="kpi-value">5.96%</div><div class="kpi-change up">▲ Growing agric earner</div><div class="kpi-source">NBS TRADE STATS Q1 2025</div></div>
+      <div class="kpi-card cyan"><div class="kpi-label">OIL OUTPUT Q3 2024</div><div class="kpi-value">1.47M</div><div class="kpi-change up">▲ bbls/day</div><div class="kpi-source">NBS Q3 2024 — FIGURE 3</div></div>
+    </div>
+    <div class="main-grid">
+      <div class="chart-card">
+        <div class="card-title">TOP EXPORT PRODUCTS Q1 2025</div>
+        <div class="card-sub">% share of total Nigerian export value (₦) — NBS Official Trade Statistics</div>
+        <canvas id="exportBarChart" height="110"></canvas>
+        <div class="card-source">SOURCE: NBS Foreign Trade Statistics Tables Q1 2025 — Product Ranking Sheet (Export Column)</div>
+      </div>
+      <div class="chart-card">
+        <div class="card-title">TOP IMPORT PRODUCTS Q1 2025</div>
+        <div class="card-sub">% share of total import value (₦)</div>
+        <div class="spark-row">
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Gas Oil (Diesel)</span><span class="spark-val">11.86%</span></div><div class="spark-bar"><div class="spark-fill" style="width:60%;background:var(--red)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Motor Spirit (Petrol)</span><span class="spark-val">11.42%</span></div><div class="spark-bar"><div class="spark-fill" style="width:57%;background:var(--orange)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Crude Petroleum</span><span class="spark-val">7.70%</span></div><div class="spark-bar"><div class="spark-fill" style="width:39%;background:var(--orange)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Cane Sugar (Refinery)</span><span class="spark-val">1.98%</span></div><div class="spark-bar"><div class="spark-fill" style="width:10%;background:var(--cyan)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Durum Wheat</span><span class="spark-val">1.93%</span></div><div class="spark-bar"><div class="spark-fill" style="width:9.6%;background:var(--cyan)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Motorcycles CKD</span><span class="spark-val">1.36%</span></div><div class="spark-bar"><div class="spark-fill" style="width:7%;background:var(--muted)"></div></div></div>
+          <div class="spark-item"><div class="spark-header"><span class="spark-name">Other imports</span><span class="spark-val">65.75%</span></div><div class="spark-bar"><div class="spark-fill" style="width:65.75%;background:var(--muted);opacity:.3"></div></div></div>
+        </div>
+        <div class="card-source" style="margin-top:12px">SOURCE: NBS Foreign Trade Statistics Q1 2025 — Product Ranking Sheet (Import Column)</div>
+      </div>
+    </div>
+    <div class="chart-card" style="margin-bottom:28px">
+      <div class="card-title">CRUDE OIL PRODUCTION TREND (MBPD)</div>
+      <div class="card-sub">Nigeria average daily oil production — Q1 2019 to Q3 2024 · All values in million barrels per day</div>
+      <canvas id="oilProdChart" height="70"></canvas>
+      <div class="card-source">SOURCE: NBS GDP Report Q3 2024 — Figure 3: Crude Oil Output (MBPD)</div>
+    </div>
+  </div>
+
+  <!-- INSIGHTS -->
+  <div class="page" id="page-insights">
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="insight-icon">📈</div>
+        <div class="insight-title">GDP Recovery is Sustained</div>
+        <div class="insight-body">After contracting by <span class="insight-hl">-1.92%</span> in 2020 (COVID + oil shock), Nigeria's economy has staged a consistent recovery. Q3 2024 recorded real GDP growth of <span class="insight-hl">3.46%</span> — the highest since 2014 for that quarter — driven by Services sector growth of <span class="insight-hl">5.19%</span>. The economy has grown every quarter since Q1 2022.</div>
+        <div class="insight-src">SOURCE: NBS GDP Q3 2024 (Table 9) / World Bank GDP growth series</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">🛢️</div>
+        <div class="insight-title">Oil: Export King, GDP Minority</div>
+        <div class="insight-body">Crude petroleum accounts for <span class="insight-hl">62.89%</span> of Nigeria's total export value (Q1 2025), yet contributes only <span class="insight-hl">5.57%</span> of real GDP (Q3 2024). This structural mismatch shows extreme export concentration in a capital-intensive sector employing few Nigerians, while non-oil activities drive <span class="insight-hl">94.43%</span> of domestic economic output.</div>
+        <div class="insight-src">SOURCE: NBS Trade Statistics Q1 2025 (Product Ranking) / NBS GDP Q3 2024 (Table 8)</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">🌾</div>
+        <div class="insight-title">Crop Production: The Unsung Champion</div>
+        <div class="insight-body">Crop production is the <span class="insight-hl">single largest GDP activity</span> in Nigeria at <span class="insight-hl">26.51%</span> of real GDP (Q3 2024). Agriculture as a whole contributes <span class="insight-hl">28.65%</span> of real GDP and employs the most Nigerians. Yet it receives a fraction of the government investment directed at the oil sector, representing a major policy gap.</div>
+        <div class="insight-src">SOURCE: NBS GDP Q3 2024 — Figure 2 / Table 7 (% Distribution at 2010 constant prices)</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">💳</div>
+        <div class="insight-title">Finance Sector: Explosive Growth</div>
+        <div class="insight-body">Finance &amp; Insurance recorded <span class="insight-hl">30.83% real growth</span> YoY in Q3 2024 — by far the fastest growing major sector. Financial Institutions alone grew at <span class="insight-hl">31.92%</span>. This reflects Nigeria's ongoing fintech transformation, with mobile banking, digital payments, and financial inclusion driving the formalisation of a historically cash-heavy economy.</div>
+        <div class="insight-src">SOURCE: NBS GDP Q3 2024 — Table 4 (Real GDP Growth at Constant 2010 Prices)</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">📡</div>
+        <div class="insight-title">Telecom is the Digital Backbone</div>
+        <div class="insight-body">Telecommunications &amp; Information Services contributes <span class="insight-hl">13.94%</span> of real GDP — the 3rd largest single activity in the economy — growing at <span class="insight-hl">5.92%</span> in Q3 2024. Nigeria's digital economy increasingly depends on this sector, and its outsized contribution relative to its employment base signals strong future multiplier effects.</div>
+        <div class="insight-src">SOURCE: NBS GDP Q3 2024 — Table 7 / Table 4</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-icon">🔥</div>
+        <div class="insight-title">Inflation: The Persistent Threat</div>
+        <div class="insight-body">Consumer price inflation surged from <span class="insight-hl">9.01%</span> in 2015 to <span class="insight-hl">24.66%</span> by 2023, driven by fuel subsidy removal, Naira devaluation, and food supply shocks. High inflation erodes real incomes, deters investment, and disproportionately hurts Nigeria's lowest-income households who spend the most of their income on food.</div>
+        <div class="insight-src">SOURCE: World Bank Open Data — Inflation, consumer prices (annual %) · Nigeria · 2015–2023</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="f-left">Built by <strong>Miracle Ugokwe</strong> · Data Analyst · Power BI · SQL · Python · Excel · Linux (Debian)</div>
+    <div class="f-right">NBS Q3 2024 · NBS TRADE Q1 2025 · WORLD BANK OPEN DATA · API_NGA_DS2</div>
+  </footer>
+</div>
+
+<script>
+function switchTab(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if(name==='sectors'&&!sR)renderSectors();
+  if(name==='trade'&&!tR)renderTrade();
+}
+Chart.defaults.color='#4a7a99';
+Chart.defaults.font.family="'DM Mono',monospace";
+Chart.defaults.font.size=11;
+const C='#00d4ff',O='#f97316',G='#22c55e',R='#ef4444';
+function grad(ctx,c1,c2,h){const g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,c1);g.addColorStop(1,c2);return g;}
+const TO={backgroundColor:'#0c1a2e',borderColor:'#1a3050',borderWidth:1};
+const XAXIS={grid:{color:'rgba(26,48,80,0.45)'},ticks:{color:'#4a7a99'}};
+const YAXIS={grid:{color:'rgba(26,48,80,0.45)'},ticks:{color:'#4a7a99'}};
+
+// GDP LINE — World Bank real data
+const gc=document.getElementById('gdpChart').getContext('2d');
+new Chart(gc,{type:'line',data:{
+  labels:['2014','2015','2016','2017','2018','2019','2020','2021','2022','2023'],
+  datasets:[{label:'Real GDP Growth %',
+    data:[6.31,2.65,-1.62,0.81,1.92,2.21,-6.37,1.11,4.32,3.33],
+    borderColor:C,backgroundColor:grad(gc,C+'44',C+'00',300),
+    pointBackgroundColor:C,pointBorderColor:'#060f1c',pointBorderWidth:2,
+    pointRadius:5,tension:0.4,fill:true,borderWidth:2.5}]},
+  options:{responsive:true,plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.raw}%`}}},
+    scales:{x:XAXIS,y:{...YAXIS,ticks:{...YAXIS.ticks,callback:v=>v+'%'}}}}});
+
+// SECTOR DONUT — NBS Q3 2024 Table 8
+const sd={labels:['Services','Agriculture','Industries'],values:[53.58,28.65,17.77],colors:[C,O,G]};
+const dc=document.getElementById('sectorDonut').getContext('2d');
+new Chart(dc,{type:'doughnut',data:{labels:sd.labels,datasets:[{data:sd.values,
+  backgroundColor:sd.colors.map(c=>c+'cc'),borderColor:'#060f1c',borderWidth:3,hoverOffset:8}]},
+  options:{responsive:true,cutout:'68%',plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.raw}%`}}}}});
+sd.labels.forEach((l,i)=>{document.getElementById('sectorLegend').innerHTML+=
+  `<div class="legend-item"><div class="legend-dot" style="background:${sd.colors[i]}"></div><span class="legend-label">${l}</span><span class="legend-pct">${sd.values[i]}%</span></div>`;});
+
+// INFLATION LINE — World Bank real data
+const ic=document.getElementById('inflationChart').getContext('2d');
+new Chart(ic,{type:'line',data:{
+  labels:['2015','2016','2017','2018','2019','2020','2021','2022','2023'],
+  datasets:[{label:'Inflation %',data:[9.01,15.70,16.50,12.10,11.40,13.25,16.95,18.85,24.66],
+    borderColor:O,backgroundColor:grad(ic,O+'44',O+'00',200),fill:true,tension:0.4,
+    borderWidth:2.5,pointRadius:4,pointBackgroundColor:O}]},
+  options:{responsive:true,plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.raw}%`}}},
+    scales:{x:XAXIS,y:{...YAXIS,ticks:{...YAXIS.ticks,callback:v=>v+'%'}}}}});
+
+let sR=false,tR=false;
+
+function renderSectors(){
+  sR=true;
+  // SECTOR BAR — NBS Q3 2024 Table 4 & 9 real YoY growth
+  const sb=document.getElementById('sectorBarChart').getContext('2d');
+  new Chart(sb,{type:'bar',data:{
+    labels:['Finance & Insurance','Transportation','Info & Comm.','Services (Total)','Mining & Quarrying','Electricity & Gas','Industries (Total)','Construction','Agriculture','Manufacturing','Trade'],
+    datasets:[{label:'Real Growth % YoY',
+      data:[30.83,12.15,5.92,5.19,3.27,3.23,2.18,2.91,1.14,0.92,0.65],
+      backgroundColor:[C,C,C,C,O,O,O,O,O,'#64748b','#64748b'].map(c=>c+'cc'),
+      borderRadius:5,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,
+      plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.raw}%`}}},
+      scales:{x:{...XAXIS,ticks:{...XAXIS.ticks,callback:v=>v+'%'}},y:{grid:{display:false},ticks:{color:'#4a7a99',font:{size:10}}}}}});
+
+  // QUARTERLY GDP — NBS reports
+  const qc=document.getElementById('quarterlyChart').getContext('2d');
+  new Chart(qc,{type:'line',data:{
+    labels:['Q3 22','Q4 22','Q1 23','Q2 23','Q3 23','Q4 23','Q1 24','Q2 24','Q3 24'],
+    datasets:[{label:'Real GDP Growth %',
+      data:[2.25,3.52,2.31,2.51,2.54,3.46,2.98,3.19,3.46],
+      borderColor:C,backgroundColor:grad(qc,C+'33',C+'00',200),fill:true,tension:0.4,
+      borderWidth:2.5,pointRadius:5,pointBackgroundColor:ctx=>{
+        const v=ctx.dataset.data[ctx.dataIndex];return v>=3.4?O:C;},
+      pointBorderColor:'#060f1c',pointBorderWidth:2}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.raw}%`}}},
+      scales:{x:XAXIS,y:{...YAXIS,min:1.8,max:4.0,ticks:{...YAXIS.ticks,callback:v=>v+'%'}}}}});
+
+  // OIL vs NON-OIL DONUT
+  const oc=document.getElementById('oilDonut').getContext('2d');
+  new Chart(oc,{type:'doughnut',data:{labels:['Non-Oil GDP','Oil GDP'],datasets:[{data:[94.43,5.57],
+    backgroundColor:[C+'cc',O+'cc'],borderColor:'#060f1c',borderWidth:3,hoverOffset:8}]},
+    options:{responsive:true,cutout:'65%',plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.label}: ${ctx.raw}%`}}}}});
+  const ol=document.getElementById('oilLegend');
+  [['Non-Oil GDP','94.43%',C],['Oil GDP','5.57%',O]].forEach(([l,v,c])=>{
+    ol.innerHTML+=`<div class="legend-item"><div class="legend-dot" style="background:${c}"></div><span class="legend-label">${l}</span><span class="legend-pct">${v}</span></div>`;});
+
+  // SECTOR STACK OVER TIME — NBS Annual Table 10 + Q 2024 Table 8
+  const ss=document.getElementById('sectorStackChart').getContext('2d');
+  new Chart(ss,{type:'bar',data:{
+    labels:['2019','2020','2021','2022','2023','Q1 24','Q2 24','Q3 24'],
+    datasets:[
+      {label:'Services',data:[52.60,52.44,53.56,55.40,56.18,58.04,58.76,53.58],backgroundColor:C+'88',borderRadius:3},
+      {label:'Agriculture',data:[25.16,26.21,25.88,25.58,25.18,21.07,22.61,28.65],backgroundColor:O+'88',borderRadius:3},
+      {label:'Industries',data:[22.25,21.36,20.56,19.02,18.65,20.89,18.62,17.77],backgroundColor:G+'88',borderRadius:3},
+    ]},
+    options:{responsive:true,
+      plugins:{legend:{labels:{color:'#4a7a99',boxWidth:12,font:{size:10}}},tooltip:{...TO}},
+      scales:{x:XAXIS,y:{...YAXIS,min:14,max:65,ticks:{...YAXIS.ticks,callback:v=>v+'%'}}}}});
+}
+
+function renderTrade(){
+  tR=true;
+  // EXPORT BAR — NBS Trade Q1 2025
+  const ec=document.getElementById('exportBarChart').getContext('2d');
+  new Chart(ec,{type:'bar',data:{
+    labels:['Crude Petroleum','Natural Gas','Other Petrol. Gases','Urea/Fertiliser','Cocoa (Std)','Cocoa (Superior)','Jet Fuel','Other LPG','Cashew Nuts','Sesame Seeds'],
+    datasets:[{label:'% of Total Exports',
+      data:[62.89,9.38,8.65,4.15,3.49,2.47,1.53,0.80,0.77,0.62],
+      backgroundColor:[O,C,O,C,G,G,C,O,G,G].map(c=>c+'cc'),
+      borderRadius:5,borderSkipped:false}]},
+    options:{indexAxis:'y',responsive:true,
+      plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.raw}% of exports`}}},
+      scales:{x:{...XAXIS,ticks:{...XAXIS.ticks,callback:v=>v+'%'}},y:{grid:{display:false},ticks:{color:'#4a7a99',font:{size:10}}}}}});
+
+  // OIL PRODUCTION — NBS Q3 2024 Figure 3 (exact values from report)
+  const op=document.getElementById('oilProdChart').getContext('2d');
+  new Chart(op,{type:'line',data:{
+    labels:['Q1 19','Q2 19','Q3 19','Q4 19','Q1 20','Q2 20','Q3 20','Q4 20','Q1 21','Q2 21','Q3 21','Q4 21','Q1 22','Q2 22','Q3 22','Q4 22','Q1 23','Q2 23','Q3 23','Q4 23','Q1 24','Q2 24','Q3 24'],
+    datasets:[{label:'Oil Production (MBPD)',
+      data:[1.99,2.02,2.04,2.00,2.07,1.81,1.67,1.56,1.72,1.61,1.57,1.50,1.49,1.43,1.20,1.34,1.51,1.22,1.45,1.55,1.57,1.41,1.47],
+      borderColor:O,backgroundColor:grad(op,O+'33',O+'00',150),fill:true,tension:0.3,
+      borderWidth:2.5,pointRadius:3,pointBackgroundColor:O}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{...TO,callbacks:{label:ctx=>`  ${ctx.raw}M bbls/day`}}},
+      scales:{x:{...XAXIS,ticks:{...XAXIS.ticks,font:{size:9},maxRotation:45}},
+        y:{...YAXIS,min:1.0,max:2.2,ticks:{...YAXIS.ticks},title:{display:true,text:'MBPD',color:'#4a7a99',font:{size:10}}}}}});
+}
+</script>
+
+
+</body></html>
