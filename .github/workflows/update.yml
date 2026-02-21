@@ -1,0 +1,34 @@
+name: Update Dashboard Data
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6am
+  workflow_dispatch:       # Also allows manual trigger
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas openpyxl
+
+      - name: Run data pipeline
+        run: |
+          cd scripts
+          python3 clean_data.py
+          python3 analyze.py
+
+      - name: Commit and push updates
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+          git add outputs/
+          git commit -m "Auto-update: $(date '+%Y-%m-%d')" || echo "No changes"
+          git push
